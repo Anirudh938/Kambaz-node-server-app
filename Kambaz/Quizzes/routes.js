@@ -11,10 +11,14 @@ export default function QuizzesRoutes(app) {
         res.send(newQuiz);
     })
     app.get("/api/quiz/:quizId", async (req, res) => {
-        const { quizId } = req.quizId;
+        const { quizId } = req.params;
         const role = req.session["currentUser"]?.role;
         const quiz = quizzesDao.getQuizById(quizId, role);
         res.send(quiz);
     });
-
+    app.delete("/api/quiz/:quizId", async (req, res) => {
+        const { quizId } = req.params;
+        const status = quizzesDao.deleteQuizById(quizId);
+        res.send(status);
+    })
 }

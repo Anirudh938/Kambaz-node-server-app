@@ -46,3 +46,8 @@ export function getQuizById(quizId, role) {
         questions: questionsWithConditionalAnswers
     };
 }
+
+export function deleteQuizById(quizId) {
+    const { quizzes } = Database;
+    Database.quizzes = quizzes.filter((quiz) => quiz.quizId !== quizId);
+}

@@ -1,5 +1,6 @@
 import Database from "../Database/index.js";
 import {v4 as uuidv4} from "uuid";
+import type EditQuiz from "../Interface/EditQuiz";
 
 export function createQuiz(quiz) {
     const newQuiz = { ...quiz, quizId: uuidv4() }
@@ -50,4 +51,52 @@ export function getQuizById(quizId, role) {
 export function deleteQuizById(quizId) {
     const { quizzes } = Database;
     Database.quizzes = quizzes.filter((quiz) => quiz.quizId !== quizId);
+}
+
+
+export function updateQuiz(quiz: EditQuiz, courseId: string) {
+
+    let { quizzes } = Database;
+    //create a new quiz
+    if ( quiz.quizId === null || quiz.quizId === undefined) {
+        const newQuiz = {
+            courseId: courseId,
+            quizId: uuidv4(),
+            details: quiz.quizDetails,
+            questions: quiz.questions.newQuestions
+        }
+        Database.quizzes = [...quizzes, newQuiz];
+        return newQuiz;
+    }
+
+    //updating an existing quiz
+    else {
+        const existingQuiz = quizzes.find((q)=>(q.quizId === quiz.quizId && q.courseId === courseId));
+        quizzes = quizzes.filter((q)=> q.quizId !== quiz.quizId);
+
+        if(quiz.questions.deleteQuestionsIds !== null) {
+            existingQuiz.questions = existingQuiz.questions.filter((q) => {
+                return !quiz.questions.deleteQuestionsIds.includes(q.questionId);
+            });
+        }
+
+        if(quiz.questions.updateQuestions !== null) {
+            const questionsMap = new Map();
+
+            for (const question of quiz.questions.updateQuestions) {
+                if (question.questionId) {
+                    questionsMap.set(question.questionId, question);
+                }
+            }
+
+            existingQuiz.questions = existingQuiz.questions.map((q) => questionsMap.has(q.questionId) ? questionsMap.get(q.questionId) : q);
+        }
+
+
+        if(quiz.questions.newQuestions !== null) {
+            existingQuiz.questions = [...existingQuiz.questions, ...quiz.questions.newQuestions]
+        }
+
+        Database.quizzes = [...quizzes, existingQuiz];
+    }
 }

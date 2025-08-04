@@ -20,5 +20,11 @@ export default function QuizzesRoutes(app) {
         const { quizId } = req.params;
         const status = quizzesDao.deleteQuizById(quizId);
         res.send(status);
+    });
+
+    app.put("/api/updateQuiz/:courseId", async (req, res) => {
+        const { courseId } = req.params
+        const { quiz } = req.body;
+        cosnt quiz =
     })
 }

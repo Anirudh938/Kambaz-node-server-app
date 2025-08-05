@@ -13,12 +13,8 @@ import EnrollmentRoutes from "./Kambaz/Enrollments/routes.js";
 const app = express();
 app.use(cors({
     credentials: true,
-    origin: true,
+    origin: process.env.NETLIFY_URL || "http://localhost:5173",
 }));
-
-console.log('NODE_ENV:', process.env.NODE_ENV);
-console.log('NETLIFY_URL:', process.env.NETLIFY_URL);
-
 const sessionOptions = {
     secret: process.env.SESSION_SECRET || "kambaz",
     resave: false,
@@ -32,7 +28,6 @@ if (process.env.NODE_ENV !== "development") {
         domain: process.env.NODE_SERVER_DOMAIN,
     };
 }
-console.log("session options")
 app.use(
     session(sessionOptions)
 );

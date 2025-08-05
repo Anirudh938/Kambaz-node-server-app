@@ -1,6 +1,5 @@
 import Database from "../Database/index.js";
 import {v4 as uuidv4} from "uuid";
-import type EditQuiz from "../Interface/EditQuiz";
 
 export function createQuiz(quiz) {
     const newQuiz = { ...quiz, quizId: uuidv4() }
@@ -54,7 +53,7 @@ export function deleteQuizById(quizId) {
 }
 
 
-export function updateQuiz(quiz: EditQuiz, courseId: string) {
+export function updateQuiz(quiz, courseId) {
 
     let { quizzes } = Database;
     //create a new quiz
@@ -74,16 +73,18 @@ export function updateQuiz(quiz: EditQuiz, courseId: string) {
         const existingQuiz = quizzes.find((q)=>(q.quizId === quiz.quizId && q.courseId === courseId));
         quizzes = quizzes.filter((q)=> q.quizId !== quiz.quizId);
 
+        existingQuiz.details = quiz.quizDetails;
+
         if(quiz.questions.deleteQuestionsIds !== null) {
             existingQuiz.questions = existingQuiz.questions.filter((q) => {
                 return !quiz.questions.deleteQuestionsIds.includes(q.questionId);
             });
         }
 
-        if(quiz.questions.updateQuestions !== null) {
+        if(quiz.questions.updatedQuestions !== null) {
             const questionsMap = new Map();
 
-            for (const question of quiz.questions.updateQuestions) {
+            for (const question of quiz.questions.updatedQuestions) {
                 if (question.questionId) {
                     questionsMap.set(question.questionId, question);
                 }
@@ -98,5 +99,6 @@ export function updateQuiz(quiz: EditQuiz, courseId: string) {
         }
 
         Database.quizzes = [...quizzes, existingQuiz];
+        return existingQuiz;
     }
 }

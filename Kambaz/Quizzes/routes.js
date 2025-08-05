@@ -24,7 +24,9 @@ export default function QuizzesRoutes(app) {
 
     app.put("/api/updateQuiz/:courseId", async (req, res) => {
         const { courseId } = req.params
-        const { quiz } = req.body;
-        cosnt quiz =
+        const quiz = req.body;
+        console.log(quiz, courseId)
+        const updatedQuiz = quizzesDao.updateQuiz(quiz, courseId);
+        res.send(updatedQuiz);
     })
 }

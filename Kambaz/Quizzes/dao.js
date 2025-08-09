@@ -1,12 +1,5 @@
-import Database from "../Database/index.js";
 import {v4 as uuidv4} from "uuid";
 import model from "./model.js";
-
-export function createQuiz(quiz) {
-    const newQuiz = { ...quiz, _id: uuidv4() }
-    Database.quizzes = [...Database.quizzes, newQuiz]
-    return newQuiz
-}
 
 export async function getQuizzesByCourse(courseId) {
     const quizzes = await model.find({courseId: courseId});

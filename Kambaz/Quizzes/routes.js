@@ -5,11 +5,6 @@ export default function QuizzesRoutes(app) {
         const quizzes = await quizzesDao.getQuizzesByCourse(courseId);
         res.send(quizzes);
     });
-    app.put("/api/quiz", async (req,res) => {
-        const { quiz } = req.body;
-        const newQuiz = quizzesDao.createQuiz(quiz);
-        res.send(newQuiz);
-    })
     app.get("/api/quiz/:quizId", async (req, res) => {
         const { quizId } = req.params;
         const role = req.session["currentUser"]?.role;

@@ -1,18 +1,18 @@
 import Database from "../Database/index.js";
 import {v4 as uuidv4} from "uuid";
+import model from "./model.js";
 
 export function createQuiz(quiz) {
-    const newQuiz = { ...quiz, quizId: uuidv4() }
+    const newQuiz = { ...quiz, _id: uuidv4() }
     Database.quizzes = [...Database.quizzes, newQuiz]
     return newQuiz
 }
 
-export function getQuizzesByCourse(courseId) {
-    const { quizzes } = Database;
+export async function getQuizzesByCourse(courseId) {
+    const quizzes = await model.find({courseId: courseId});
     return quizzes
-        .filter((quiz) => quiz.courseId === courseId)
         .map((quiz) => ({
-            quizId: quiz.quizId,
+            quizId: quiz._id,
             title: quiz.details.title,
             dates: quiz.details.dates,
             points: quiz.questions.reduce((total, question) => total + question.points, 0),
@@ -20,14 +20,14 @@ export function getQuizzesByCourse(courseId) {
         }));
 }
 
-export function getQuizById(quizId, role) {
-    const { quizzes } = Database;
-    const quiz = quizzes.find((quiz) => quiz.quizId === quizId);
-
+export async function getQuizById(quizId, role) {
+    const quiz = await model.findOne({_id: quizId});
     if (!quiz) {
         return null;
     }
+    let points = 0;
     const questionsWithConditionalAnswers = quiz.questions.map((question) => {
+        points += question.points
         return {
             questionId: question.questionId,
             questionTitle: question.questionTitle,
@@ -41,47 +41,44 @@ export function getQuizById(quizId, role) {
 
     return {
         courseId: quiz.courseId,
-        quizId: quiz.quizId,
+        quizId: quiz._id,
+        points: points,
         details: quiz.details,
         questions: questionsWithConditionalAnswers
     };
 }
 
 export function deleteQuizById(quizId) {
-    const { quizzes } = Database;
-    Database.quizzes = quizzes.filter((quiz) => quiz.quizId !== quizId);
+    return model.deleteOne({ _id: quizId });
 }
 
 
-export function updateQuiz(quiz, courseId) {
+export async function updateQuiz(quiz, courseId) {
 
-    let { quizzes } = Database;
-    //create a new quiz
     if ( quiz.quizId === null || quiz.quizId === undefined) {
         const newQuiz = {
             courseId: courseId,
-            quizId: uuidv4(),
+            _id: uuidv4(),
             details: quiz.quizDetails,
             questions: quiz.questions.newQuestions
         }
-        Database.quizzes = [...quizzes, newQuiz];
+        model.create(newQuiz)
         return newQuiz;
     }
 
     //updating an existing quiz
     else {
-        const existingQuiz = quizzes.find((q)=>(q.quizId === quiz.quizId && q.courseId === courseId));
-        quizzes = quizzes.filter((q)=> q.quizId !== quiz.quizId);
+        const existingQuiz = await model.findOne({_id: quiz.quizId})
 
         existingQuiz.details = quiz.quizDetails;
 
-        if(quiz.questions.deleteQuestionsIds !== null) {
+        if(quiz.questions.deleteQuestionsIds !== []) {
             existingQuiz.questions = existingQuiz.questions.filter((q) => {
                 return !quiz.questions.deleteQuestionsIds.includes(q.questionId);
             });
         }
 
-        if(quiz.questions.updatedQuestions !== null) {
+        if(quiz.questions.updatedQuestions !== []) {
             const questionsMap = new Map();
 
             for (const question of quiz.questions.updatedQuestions) {
@@ -94,11 +91,10 @@ export function updateQuiz(quiz, courseId) {
         }
 
 
-        if(quiz.questions.newQuestions !== null) {
+        if(quiz.questions.newQuestions !== []) {
             existingQuiz.questions = [...existingQuiz.questions, ...quiz.questions.newQuestions]
         }
 
-        Database.quizzes = [...quizzes, existingQuiz];
-        return existingQuiz;
+        return model.updateOne({ _id: quiz.quizId }, existingQuiz);
     }
 }

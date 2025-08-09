@@ -1,4 +1,5 @@
 import * as quizzesDao from "./dao.js";
+import {changeQuizStatus} from "./dao.js";
 export default function QuizzesRoutes(app) {
     app.get("/api/quizzes/:courseId", async (req, res) => {
         const { courseId } = req.params;
@@ -20,8 +21,11 @@ export default function QuizzesRoutes(app) {
     app.put("/api/updateQuiz/:courseId", async (req, res) => {
         const { courseId } = req.params
         const quiz = req.body;
-        console.log(quiz)
         const updatedQuiz = quizzesDao.updateQuiz(quiz, courseId);
         res.send(updatedQuiz);
+    })
+    app.put("/api/updateStatus", async (req,res) => {
+        const details = req.body;
+        await quizzesDao.changeQuizStatus(details.quizId, details.status);
     })
 }

@@ -45,7 +45,6 @@ export function deleteQuizById(quizId) {
     return model.deleteOne({ _id: quizId });
 }
 
-
 export async function updateQuiz(quiz, courseId) {
 
     if ( quiz.quizId === null || quiz.quizId === undefined) {
@@ -90,4 +89,12 @@ export async function updateQuiz(quiz, courseId) {
 
         return model.updateOne({ _id: quiz.quizId }, existingQuiz);
     }
+}
+
+export async function changeQuizStatus(quizId, status) {
+    const quiz = await model.findOne({ _id: quizId });
+     if(quiz !== undefined && quiz !== null) {
+         quiz.isPublished = status;
+         module.updateOne({_id: quizId,}, quiz);
+     }
 }

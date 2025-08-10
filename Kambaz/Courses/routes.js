@@ -33,9 +33,7 @@ export default function CourseRoutes(app) {
     app.put("/api/courses/:courseId", async (req, res) => {
         const { courseId } = req.params;
         const courseUpdates = req.body;
-        console.log(courseUpdates)
         const status = await courseDao.updateCourse(courseId, courseUpdates);
-        console.log(status)
         res.send(status);
     });
     app.get("/api/courses/:courseId/modules", async (req, res) => {

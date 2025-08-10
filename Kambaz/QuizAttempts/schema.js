@@ -22,13 +22,11 @@ const attemptSchema = new mongoose.Schema(
             type: String,
             ref: "UserModel",
             required: true },
-        answers: [ {
-            questionId: {
-                type: String,
-                required: true
-            },
-            answer: String
-        }]
+        answers: {
+            type: Map,
+            of: String,
+            default: new Map()
+        }
     }, {
         collection: 'attempts'
     }

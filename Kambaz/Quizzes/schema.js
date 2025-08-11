@@ -31,6 +31,37 @@ const schema = new mongoose.Schema({
                 type: String,
                 required: true
             }
+        },
+        quizType: {
+            type: String,
+            required: true,
+            default: "Graded Quiz"
+        },
+        assignmentGroup : {
+            type: String,
+            required: true,
+            default: "ASSIGNMENTS"
+        },
+        options: {
+           shuffleAnswers: {
+               type: Boolean,
+               required: false,
+               default: false
+           },
+            noOfAttempts: {
+               type: Number,
+               required: false,
+               default: 1
+            },
+            timeLimit: {
+               type: Number,
+                required: false,
+                default: 20
+            }
+        },
+        assign: {
+            type: String,
+            required: false,
         }
     },
     questions: [{

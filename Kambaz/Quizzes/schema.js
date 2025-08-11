@@ -9,6 +9,11 @@ const schema = new mongoose.Schema({
         ref: "CourseModel",
         required: true
     },
+    published: {
+        type: Boolean,
+        required: true,
+        default: false
+    },
     details: {
         title: {
             type: String,
@@ -57,6 +62,16 @@ const schema = new mongoose.Schema({
                type: Number,
                 required: false,
                 default: 20
+            },
+            questionLocked: {
+                type: Boolean,
+                required: false,
+                default: false
+            },
+            showAnswers: {
+               type: String,
+                required: false,
+                default: null
             }
         },
         assign: {

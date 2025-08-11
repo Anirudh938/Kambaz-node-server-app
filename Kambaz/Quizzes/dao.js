@@ -34,6 +34,7 @@ export async function getQuizById(quizId, role) {
 
     return {
         courseId: quiz.courseId,
+        published: quiz.published,
         quizId: quiz._id,
         points: points,
         details: quiz.details,
@@ -48,9 +49,11 @@ export function deleteQuizById(quizId) {
 export async function updateQuiz(quiz, courseId) {
 
     if ( quiz.quizId === null || quiz.quizId === undefined) {
+        let published =  false;
         const newQuiz = {
             courseId: courseId,
             _id: uuidv4(),
+            published: quiz.published,
             details: quiz.quizDetails,
             questions: quiz.questions.newQuestions
         }
@@ -63,6 +66,7 @@ export async function updateQuiz(quiz, courseId) {
         const existingQuiz = await model.findOne({_id: quiz.quizId})
 
         existingQuiz.details = quiz.quizDetails;
+        existingQuiz.published = quiz.published ?? false;
 
         if(quiz.questions.deleteQuestionsIds !== []) {
             existingQuiz.questions = existingQuiz.questions.filter((q) => {

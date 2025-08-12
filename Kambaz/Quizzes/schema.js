@@ -72,7 +72,8 @@ const schema = new mongoose.Schema({
                type: String,
                 required: false,
                 default: null
-            }
+            },
+             accessCode:    { type: String,  required: false, default: ""    } 
         },
         assign: {
             type: String,

@@ -1,27 +1,36 @@
 import {v4 as uuidv4} from "uuid";
 import model from "./model.js";
-
 export async function getAttemptDetails(quizId, userId) {
-    const attemptDetails = await model.findOne({quiz: quizId, user: userId}).populate("quiz");
-    if(attemptDetails === null || attemptDetails === undefined) {
-        return null;
+  const doc = await model
+    .findOne({ quiz: quizId, user: userId })
+    .populate("quiz");
+
+  if (!doc) return null;
+
+  let score = 0;
+  const qs = (doc.quiz && doc.quiz.questions) ? doc.quiz.questions : [];
+  for (const q of qs) {
+    const ua = doc.answers instanceof Map
+      ? doc.answers.get(q.questionId)
+      : (doc.answers?.[q.questionId] ?? null);
+    if (ua && ua === q.correctAnswers) score += q.points;
+  }
+
+
+  let answersObj = {};
+  if (doc.answers instanceof Map) {
+    answersObj = {};
+    for (const [k, v] of doc.answers.entries()) {
+      answersObj[k] = v;
     }
-    let score = 0;
-    if(attemptDetails.quiz && attemptDetails.quiz.questions) {
-        attemptDetails.quiz.questions.forEach(question => {
-            const userAnswer = attemptDetails.answers.get(question.questionId);
+  } else if (doc.answers && typeof doc.answers === "object") {
+    answersObj = doc.answers;
+  }
 
-            if (userAnswer && userAnswer === question.correctAnswers) {
-                score += question.points
-            }
-        });
-    }
-
-
-    return {
-        ... attemptDetails,
-        score: score
-    };
+  const raw = doc.toObject();   
+  raw.answers = answersObj;    
+  raw.score = score;
+  return raw;
 }
 
 export async function newAttempt (quizId, userId, answers) {
@@ -42,7 +51,7 @@ export async function newAttempt (quizId, userId, answers) {
     else {
         attemptDetails.noOfAttempts = attemptDetails.noOfAttempts + 1;
         attemptDetails.attemptDate = new Date();
-        attemptDetails.asnwers = answers;
+        attemptDetails.answers = answers;
         return model.updateOne({ _id: attemptDetails._id }, attemptDetails);
     }
 }

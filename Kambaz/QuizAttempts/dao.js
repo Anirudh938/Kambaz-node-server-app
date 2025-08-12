@@ -1,5 +1,6 @@
 import {v4 as uuidv4} from "uuid";
 import model from "./model.js";
+import quizModel from "../Quizzes/model.js";
 export async function getAttemptDetails(quizId, userId) {
   const doc = await model
     .findOne({ quiz: quizId, user: userId })
@@ -46,12 +47,24 @@ export async function newAttempt (quizId, userId, answers) {
             user: userId,
             answers: answers
         }
-        return model.create(newAttempt);
+        await model.create(newAttempt);
     }
     else {
         attemptDetails.noOfAttempts = attemptDetails.noOfAttempts + 1;
         attemptDetails.attemptDate = new Date();
         attemptDetails.answers = answers;
-        return model.updateOne({ _id: attemptDetails._id }, attemptDetails);
+        await model.updateOne({ _id: attemptDetails._id }, attemptDetails);
     }
+
+    const quiz = await quizModel.findOne({_id: quizId});
+    let score = 0;
+    let points = 0
+    const answersMap = new Map(Object.entries(answers));
+    quiz.questions.forEach( question => {
+        if(question.correctAnswers === answersMap.get(question.questionId)) {
+            score += question.points
+        }
+        points += question.points;
+    })
+    return { score: score, points: points}
 }

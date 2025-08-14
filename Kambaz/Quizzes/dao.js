@@ -6,6 +6,7 @@ export async function getQuizzesByCourse(courseId) {
     return quizzes
         .map((quiz) => ({
             quizId: quiz._id,
+            published: quiz.published,
             title: quiz.details.title,
             dates: quiz.details.dates,
             points: quiz.questions.reduce((total, question) => total + question.points, 0),

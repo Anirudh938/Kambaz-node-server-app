@@ -10,11 +10,24 @@ export async function getAttemptDetails(quizId, userId) {
 
   let score = 0;
   const qs = (doc.quiz && doc.quiz.questions) ? doc.quiz.questions : [];
+
+  const showAnswersDate = doc.quiz?.details?.options?.showAnswers
+      ? new Date(doc.quiz.details.options.showAnswers)
+      : null;
+
+  const now = new Date();
+
+    const shouldShowAnswers = !showAnswersDate || now > showAnswersDate;
+
   for (const q of qs) {
     const ua = doc.answers instanceof Map
       ? doc.answers.get(q.questionId)
       : (doc.answers?.[q.questionId] ?? null);
     if (ua && ua === q.correctAnswers) score += q.points;
+
+    if(!shouldShowAnswers){
+        q.correctAnswers = null;
+    }
   }
 
 

@@ -73,7 +73,12 @@ const schema = new mongoose.Schema({
                 required: false,
                 default: null
             },
-             accessCode:    { type: String,  required: false, default: ""    } 
+             accessCode:    { type: String,  required: false, default: ""    } ,
+               oneQuestionAtATime: {
+                    type: Boolean,
+                    required: false,
+                    default: false
+                }
         },
         assign: {
             type: String,

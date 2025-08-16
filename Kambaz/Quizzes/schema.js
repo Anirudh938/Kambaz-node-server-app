@@ -78,11 +78,14 @@ const schema = new mongoose.Schema({
                     type: Boolean,
                     required: false,
                     default: false
+<<<<<<< HEAD
                 },
                 webCamRequired: {
                     type: Boolean,
                     required: false,
                     default: false
+=======
+>>>>>>> 20a6882cc355396f9e3e198c4419598a77ecd358
                 }
         },
         assign: {

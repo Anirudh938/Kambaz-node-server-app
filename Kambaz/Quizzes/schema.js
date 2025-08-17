@@ -79,7 +79,7 @@ const schema = new mongoose.Schema({
                     required: false,
                     default: false
                 },
-                webCamRequired: {
+            webCamRequired: {
                     type: Boolean,
                     required: false,
                     default: false

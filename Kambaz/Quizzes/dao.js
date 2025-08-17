@@ -99,7 +99,9 @@ export async function updateQuiz(quiz, courseId) {
 export async function changeQuizStatus(quizId, status) {
     const quiz = await model.findOne({ _id: quizId });
      if(quiz !== undefined && quiz !== null) {
-         quiz.isPublished = status;
-         module.updateOne({_id: quizId,}, quiz);
+         const result = await model.updateOne(
+             { _id: quizId },
+             { $set: { published: status } }
+         );
      }
 }

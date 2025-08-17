@@ -23,7 +23,16 @@ export async function getAttemptDetails(quizId, userId) {
     const ua = doc.answers instanceof Map
       ? doc.answers.get(q.questionId)
       : (doc.answers?.[q.questionId] ?? null);
-    if (ua && ua === q.correctAnswers) score += q.points;
+    if (ua ) {
+        const userAnswerSet = new Set(Array.isArray(ua) ? ua : [ua]);
+        const correctAnswersSet = new Set(Array.isArray(q.correctAnswers) ? q.correctAnswers : [q.correctAnswers]);
+        if (userAnswerSet.size === correctAnswersSet.size) {
+            const difference = new Set([...userAnswerSet].filter(x => !correctAnswersSet.has(x)));
+            if (difference.size === 0) {
+                score += q.points;
+            }
+        }
+    }
 
     if(!shouldShowAnswers){
         q.correctAnswers = null;
@@ -49,8 +58,6 @@ export async function getAttemptDetails(quizId, userId) {
 
 export async function newAttempt (quizId, userId, answers) {
     const attemptDetails = await model.findOne({quiz: quizId, user: userId});
-
-    // new Attempt
     if(attemptDetails === null || attemptDetails === undefined) {
         const newAttempt = {
             _id: uuidv4(),
@@ -74,9 +81,17 @@ export async function newAttempt (quizId, userId, answers) {
     let points = 0
     const answersMap = new Map(Object.entries(answers));
     quiz.questions.forEach( question => {
-        if(question.correctAnswers === answersMap.get(question.questionId)) {
-            score += question.points
+        const userAnswer = answersMap.get(question.questionId);
+        const correctAnswers = question.correctAnswers;
+        const userAnswerSet = new Set(Array.isArray(userAnswer) ? userAnswer : [userAnswer]);
+        const correctAnswersSet = new Set(Array.isArray(correctAnswers) ? correctAnswers : [correctAnswers]);
+        if (userAnswerSet.size === correctAnswersSet.size) {
+            const difference = new Set([...userAnswerSet].filter(x => !correctAnswersSet.has(x)));
+            if (difference.size === 0) {
+                score += question.points;
+            }
         }
+
         points += question.points;
     })
     return { score: score, points: points}

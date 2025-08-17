@@ -112,10 +112,10 @@ const schema = new mongoose.Schema({
             type: String,
             required: true
         }],
-        correctAnswers: {
+        correctAnswers: [{
             type: String,
             required: true
-        },
+        }],
         isPublished: {
             type: Boolean,
             required: true,

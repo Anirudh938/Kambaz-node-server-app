@@ -94,7 +94,7 @@ export async function newAttempt (quizId, userId, answers) {
         const userAnswerSet = new Set(Array.isArray(userAnswer) ? userAnswer : [userAnswer]);
         if(question.questionType === 'fill-in-blank') {
             const isSubset = [...userAnswerSet].every(answer => correctAnswersSet.has(answer));
-            if (isSubset) {
+            if (isSubset && userAnswerSet.size > 0) {
                 score += question.points;
             }
         }

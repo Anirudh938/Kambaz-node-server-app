@@ -60,10 +60,7 @@ export async function updateQuiz(quiz, courseId) {
         model.create(newQuiz)
         return newQuiz;
     }
-
-    //updating an existing quiz
     else {
-        console.log(quiz)
         const existingQuiz = await model.findOne({_id: quiz.quizId})
 
         existingQuiz.details = quiz.quizDetails;

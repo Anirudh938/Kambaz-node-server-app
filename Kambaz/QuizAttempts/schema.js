@@ -24,7 +24,7 @@ const attemptSchema = new mongoose.Schema(
             required: true },
         answers: {
             type: Map,
-            of: String,
+            of: [String],
             default: new Map()
         }
     }, {

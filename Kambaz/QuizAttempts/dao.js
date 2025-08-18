@@ -24,12 +24,21 @@ export async function getAttemptDetails(quizId, userId) {
       ? doc.answers.get(q.questionId)
       : (doc.answers?.[q.questionId] ?? null);
     if (ua ) {
-        const userAnswerSet = new Set(Array.isArray(ua) ? ua : [ua]);
         const correctAnswersSet = new Set(Array.isArray(q.correctAnswers) ? q.correctAnswers : [q.correctAnswers]);
-        if (userAnswerSet.size === correctAnswersSet.size) {
-            const difference = new Set([...userAnswerSet].filter(x => !correctAnswersSet.has(x)));
-            if (difference.size === 0) {
+        const userAnswerSet = new Set(Array.isArray(ua) ? ua : [ua]);
+        if(q.questionType === 'fill-in-blank') {
+            const isSubset = [...userAnswerSet].every(answer => correctAnswersSet.has(answer));
+            if (isSubset) {
                 score += q.points;
+            }
+        }
+        else {
+
+            if (userAnswerSet.size === correctAnswersSet.size) {
+                const difference = new Set([...userAnswerSet].filter(x => !correctAnswersSet.has(x)));
+                if (difference.size === 0) {
+                    score += q.points;
+                }
             }
         }
     }
@@ -38,7 +47,6 @@ export async function getAttemptDetails(quizId, userId) {
         q.correctAnswers = null;
     }
   }
-
 
   let answersObj = {};
   if (doc.answers instanceof Map) {
@@ -75,7 +83,6 @@ export async function newAttempt (quizId, userId, answers) {
         attemptDetails.answers = answers;
         await model.updateOne({ _id: attemptDetails._id }, attemptDetails);
     }
-
     const quiz = await quizModel.findOne({_id: quizId});
     let score = 0;
     let points = 0
@@ -83,12 +90,21 @@ export async function newAttempt (quizId, userId, answers) {
     quiz.questions.forEach( question => {
         const userAnswer = answersMap.get(question.questionId);
         const correctAnswers = question.correctAnswers;
-        const userAnswerSet = new Set(Array.isArray(userAnswer) ? userAnswer : [userAnswer]);
         const correctAnswersSet = new Set(Array.isArray(correctAnswers) ? correctAnswers : [correctAnswers]);
-        if (userAnswerSet.size === correctAnswersSet.size) {
-            const difference = new Set([...userAnswerSet].filter(x => !correctAnswersSet.has(x)));
-            if (difference.size === 0) {
-                score += question.points;
+        const userAnswerSet = new Set(Array.isArray(userAnswer) ? userAnswer : [userAnswer]);
+        if(question.questionType === 'fill-in-blank') {
+            const isSubset = [...userAnswerSet].every(answer => correctAnswersSet.has(answer));
+            if (isSubset) {
+                score += q.points;
+            }
+        }
+        else {
+
+            if (userAnswerSet.size === correctAnswersSet.size) {
+                const difference = new Set([...userAnswerSet].filter(x => !correctAnswersSet.has(x)));
+                if (difference.size === 0) {
+                    score += question.points;
+                }
             }
         }
 

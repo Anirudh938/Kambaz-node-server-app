@@ -28,7 +28,7 @@ export async function getAttemptDetails(quizId, userId) {
         const userAnswerSet = new Set(Array.isArray(ua) ? ua : [ua]);
         if(q.questionType === 'fill-in-blank') {
             const isSubset = [...userAnswerSet].every(answer => correctAnswersSet.has(answer));
-            if (isSubset) {
+            if (isSubset && userAnswerSet.size > 0) {
                 score += q.points;
             }
         }

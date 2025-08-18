@@ -4,7 +4,8 @@ export default function QuizAttemptRoutes(app) {
     app.get("/api/attemptDetails/:quizId", async (req, res) => {
         const { quizId } = req.params;
         const currentUser = req.session["currentUser"];
-        const details = await quizAttemptsDao.getAttemptDetails(quizId, currentUser._id);
+        const role = req.session["currentUser"]?.role;
+        const details = await quizAttemptsDao.getAttemptDetails(quizId, currentUser._id, role);
         res.send(details);
     });
 

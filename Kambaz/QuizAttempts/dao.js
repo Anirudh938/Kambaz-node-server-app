@@ -1,7 +1,7 @@
 import {v4 as uuidv4} from "uuid";
 import model from "./model.js";
 import quizModel from "../Quizzes/model.js";
-export async function getAttemptDetails(quizId, userId) {
+export async function getAttemptDetails(quizId, userId, role) {
   const doc = await model
     .findOne({ quiz: quizId, user: userId })
     .populate("quiz");
@@ -17,7 +17,7 @@ export async function getAttemptDetails(quizId, userId) {
 
   const now = new Date();
 
-    const shouldShowAnswers = !showAnswersDate || now > showAnswersDate;
+    const shouldShowAnswers = (!showAnswersDate || now > showAnswersDate) || role === "FACULTY";
 
   for (const q of qs) {
     const ua = doc.answers instanceof Map

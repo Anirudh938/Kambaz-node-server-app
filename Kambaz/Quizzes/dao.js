@@ -48,7 +48,6 @@ export function deleteQuizById(quizId) {
 }
 
 export async function updateQuiz(quiz, courseId) {
-
     if ( quiz.quizId === null || quiz.quizId === undefined) {
         let published =  false;
         const newQuiz = {
@@ -64,6 +63,7 @@ export async function updateQuiz(quiz, courseId) {
 
     //updating an existing quiz
     else {
+        console.log(quiz)
         const existingQuiz = await model.findOne({_id: quiz.quizId})
 
         existingQuiz.details = quiz.quizDetails;
@@ -75,7 +75,7 @@ export async function updateQuiz(quiz, courseId) {
             });
         }
 
-        if(quiz.questions.updatedQuestions.isEmpty === false) {
+        if(quiz.questions.updatedQuestions!==[]) {
             const questionsMap = new Map();
 
             for (const question of quiz.questions.updatedQuestions) {
@@ -88,7 +88,7 @@ export async function updateQuiz(quiz, courseId) {
         }
 
 
-        if(quiz.questions.newQuestions.isEmpty === false) {
+        if(quiz.questions.newQuestions!==[]) {
             existingQuiz.questions = [...existingQuiz.questions, ...quiz.questions.newQuestions]
         }
 

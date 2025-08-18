@@ -95,7 +95,7 @@ export async function newAttempt (quizId, userId, answers) {
         if(question.questionType === 'fill-in-blank') {
             const isSubset = [...userAnswerSet].every(answer => correctAnswersSet.has(answer));
             if (isSubset) {
-                score += q.points;
+                score += question.points;
             }
         }
         else {

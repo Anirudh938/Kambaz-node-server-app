@@ -21,7 +21,8 @@ const schema = new mongoose.Schema({
         },
         description: {
             type: String,
-            default: ""
+            default: "",
+            required:false
         },
         dates: {
             availableFrom: {
@@ -29,8 +30,8 @@ const schema = new mongoose.Schema({
                 required: true
             },
             availableUntil: {
-                type: Date,
-                required: false
+                type: String,
+                required: true
             },
             dueDate: {
                 type: String,

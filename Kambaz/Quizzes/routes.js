@@ -3,7 +3,8 @@ import {changeQuizStatus} from "./dao.js";
 export default function QuizzesRoutes(app) {
     app.get("/api/quizzes/:courseId", async (req, res) => {
         const { courseId } = req.params;
-        const quizzes = await quizzesDao.getQuizzesByCourse(courseId);
+         const role = req.session["currentUser"]?.role;
+        const quizzes = await quizzesDao.getQuizzesByCourse(courseId, role);
         res.send(quizzes);
     });
     app.get("/api/quiz/:quizId", async (req, res) => {

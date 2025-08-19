@@ -1,8 +1,15 @@
 import {v4 as uuidv4} from "uuid";
 import model from "./model.js";
 
-export async function getQuizzesByCourse(courseId) {
-    const quizzes = await model.find({courseId: courseId});
+export async function getQuizzesByCourse(courseId, role) {
+    let quizzes = []
+    if(role === "FACULTY" ) {
+        quizzes = await model.find({courseId: courseId});
+    }
+    else {
+        quizzes = await model.find({courseId: courseId , published: true})
+    }
+
     return quizzes
         .map((quiz) => ({
             quizId: quiz._id,
